@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VQI-CHAIN - Voucher Quantum Inti</title>
+<script src="https://cdn.jsdelivr.net/npm/js-sha3@0.8.0/src/sha3.min.js"></script>
+<style>
+body{font-family:monospace;background:#0a0a0a;color:#00ff88;padding:15px}
+.card{border:1px solid #00ff88;padding:15px;border-radius:10px;margin-bottom:15px;background:#111}
+button{background:#00ff88;color:#000;border:0;padding:10px 15px;border-radius:5px;font-weight:bold;width:100%;margin-top:8px}
+input,textarea{width:100%;padding:10px;background:#000;color:#00ff88;border:1px solid #00ff88;border-radius:5px;margin-top:5px}
+h1{color:#00ff88;text-align:center}
+small{color:#888}
+</style>
+</head>
+<body>
+
+<h1>VQI-CHAIN</h1>
+<p style="text-align:center">Voucher Quantum Inti<br><small>1 VQI = 1000 INTI | Supply: 10 Miliar VQI = 10 Triliun INTI</small></p>
+
+<div class="card">
+<b>DEFINISI RESMI:</b><br>
+<b>VOUCHER (Native Coin):</b> Aset asli blockchain VQI-CHAIN. Punya blockchain sendiri.<br>
+<b>COUPON (Token):</b> Aset terbitan di ATAS VOUCHER. Numpang validasi. Analogi: COIN vs TOKEN (ERC-20).
+</div>
+
+<div class="card">
+<div>Saldo: <b id="balance">0 INTI</b> | <b id="balanceVQI">0 VQI</b></div>
+<div>Wallet: <small id="wallet">-</small></div>
+<div>Block: <span id="blockCount">0</span> | Supply Terpakai: <span id="supply">0 / 10,000,000,000 VQI</span></div>
+</div>
+
+<div class="card">
+<b>Minting VOUCHER (Genesis)</b>
+<input id="mintAmount" type="number" placeholder="Jumlah VQI, contoh: 1000">
+<button onclick="mintVoucher()">MINT VQI</button>
+<small>Max 10 Miliar VQI. 1 VQI akan jadi 1000 INTI di dalam chain.</small>
+</div>
+
+<div class="card">
+<b>Transfer INTI</b>
+<input id="toAddr" placeholder="Alamat tujuan (0x...)">
+<input id="sendAmount" type="number" placeholder="Jumlah INTI, contoh: 500000">
+<button onclick="sendINTI()">KIRIM INTI</button>
+</div>
+
+<div class="card">
+<b>Terbitkan COUPON (Token di atas VOUCHER)</b>
+<input id="couponName" placeholder="Nama Coupon, contoh: DISKON50">
+<input id="couponSupply" type="number" placeholder="Supply Coupon">
+<button onclick="mintCoupon()">TERBITKAN COUPON</button>
+</div>
+
+<div class="card">
+<b>Explorer Blok</b>
+<textarea id="chainLog" rows="10" readonly></textarea>
+</div>
+
+<script>
+// ===== KONFIG VQI-CHAIN =====
+const VQI_TOTAL_SUPPLY = 10000000000; // 10 Miliar VQI
+const INTI_PER_VQI = 1000;
+const MAX_INTITotal = VQI_TOTAL_SUPPLY * INTI_PER_VQI; // 10 Triliun INTI
+
+// Formatter
+function fmt(num){ return Number(num).toLocaleString('id-ID'); }
+function fmtVQI(inti){ return fmt(inti / INTI_PER_VQI); }
+
+// Blockchain State
+let wallet = '0x' + sha3_512(Date.now().toString()).substring(0,40);
+let chain = JSON.parse(localStorage.getItem('vqi_chain') || '[]');
+let balances = JSON.parse(localStorage.getItem('vqi_balances') || '{}');
+if(!balances[wallet]) balances[wallet] = 0;
+
+function save(){ localStorage.setItem('vqi_chain', JSON.stringify(chain)); localStorage.setItem('vqi_balances', JSON.stringify(balances)); updateUI(); }
+
+function updateUI(){
+ document.getElementById('wallet').innerText = wallet;
+ document.getElementById('balance').innerText = fmt(balances[wallet]) + ' INTI';
+ document.getElementById('balanceVQI').innerText = fmtVQI(balances[wallet]) + ' VQI';
+ document.getElementById('blockCount').innerText = chain.length;
+ let usedINTI = Object.values(balances).reduce((a,b)=>a+b,0);
+ document.getElementById('supply').innerText = fmtVQI(usedINTI) + ' / ' + fmt(VQI_TOTAL_SUPPLY) + ' VQI';
+ document.getElementById('chainLog').value = JSON.stringify(chain.slice(-10).reverse(), null, 2);
+}
+
+function createBlock(type, data){
+ let prevHash = chain.length? chain[chain.length-1].hash : '0'.repeat(128);
+ let block = { index: chain.length, timestamp: Date.now(), type: type, data: data, prevHash: prevHash };
+ block.hash = sha3_512(JSON.stringify(block));
+ chain.push(block);
+ save();
+}
+
+// 4 HUKUM VQI-CHAIN
+// 1. Supply Terbatas 10 Miliar VQI
+// 2. 1 VQI = 1000 INTI (mutlak)
+// 3. VOUCHER adalah Native Coin, COUPON adalah Token diatasnya
+// 4. Semua transaksi di-hash SHA3-512
+
+function mintVoucher(){
+ let vqi = parseFloat(document.getElementById('mintAmount').value);
+ if(!vqi || vqi <=0) return alert('Isi jumlah VQI');
+ let inti = vqi * INTI_PER_VQI;
+ let usedINTI = Object.values(balances).reduce((a,b)=>a+b,0);
+ if(usedINTI + inti > MAX_INTITotal) return alert('Melebihi max supply 10 Miliar VQI!');
+ balances[wallet] += inti;
+ createBlock('VOUCHER_MINT', { wallet, vqi, inti });
+ alert('Berhasil mint ' + fmt(vqi) + ' VQI = ' + fmt(inti) + ' INTI');
+}
+
+function sendINTI(){
+ let to = document.getElementById('toAddr').value;
+ let amt = parseFloat(document.getElementById('sendAmount').value);
+ if(!to ||!amt) return alert('Lengkapi alamat & jumlah');
+ if(balances[wallet] < amt) return alert('Saldo kurang');
+ balances[wallet] -= amt;
+ if(!balances[to]) balances[to]=0;
+ balances[to] += amt;
+ createBlock('TRANSFER', { from: wallet, to, amountINTI: amt, amountVQI: amt/INTI_PER_VQI });
+ alert('Terkirim!');
+}
+
+function mintCoupon(){
+ let name = document.getElementById('couponName').value;
+ let sup = document.getElementById('couponSupply').value;
+ if(!name ||!sup) return alert('Lengkapi nama & supply');
+ createBlock('COUPON_ISSUE', { issuer: wallet, couponName: name, supply: sup, note: 'Token diatas VOUCHER VQI-CHAIN' });
+ alert('COUPON ' + name + ' berhasil diterbitkan! Ini adalah TOKEN, bukan VOUCHER asli.');
+}
+
+updateUI();
+</script>
+</body>
+</html>
