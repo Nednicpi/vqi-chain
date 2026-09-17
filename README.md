@@ -18,4 +18,4 @@ Blockchain Voucher Native Indonesia. 1 VQI = 1000 INTI (Nilai Tetap Selamanya).
 - Smart Contract & API Rules: see [LEGAL.md](LEGAL.md)
 
 ### 🚀 Visi
-Menjadi chain voucher tercepat untuk transaksi mikro di Indonesia.
+Menjadi chain voucher tercepat untuk transaksi barter mikro di Indonesia.
