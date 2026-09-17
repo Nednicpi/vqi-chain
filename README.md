@@ -1,2 +1,21 @@
-# vqi-chain
-Voucher Quantum Inti
+# VQI-CHAIN
+**Voucher Quantum Inti**
+
+Blockchain Voucher Native Indonesia. 1 VQI = 1000 INTI (Nilai Tetap Selamanya).
+
+### 🌐 Live Demo
+- Wallet: [index.html](index.html)
+- Mining: [mine.html](mine.html)
+
+### 📜 4 HUKUM VQI-CHAIN
+1. **Nilai Tetap:** 1 VQI = 1000 INTI
+2. **Supply Terbatas:** Max 10 Miliar VQI
+3. **Voucher is Native:** Voucher adalah aset asli chain
+4. **Coupon is Derivative:** Coupon hanya dari pembakaran Voucher
+
+### ⚖️ Legal & Compliance
+- Licensed under MIT License - see [LICENSE](LICENSE)
+- Smart Contract & API Rules: see [LEGAL.md](LEGAL.md)
+
+### 🚀 Visi
+Menjadi chain voucher tercepat untuk transaksi mikro di Indonesia.
