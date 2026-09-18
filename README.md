@@ -16,6 +16,10 @@ Blockchain Voucher Native Indonesia. 1 VQI = 1000 INTI (Nilai Tetap Selamanya).
 ### ⚖️ Legal & Compliance
 - Licensed under MIT License - see [LICENSE](LICENSE)
 - Smart Contract & API Rules: see [LEGAL.md](LEGAL.md)
+- Proprietary License - VQI-CHAIN Copyright 2026 VQI
+Dilarang merubah script asli dan menjual atas nama sendiri.
+Boleh kloning, belajar, dan kontribusi via Pull Request.
+Untuk komersial hubungi owner.
 
 ### 🚀 Visi
 Menjadi chain voucher tercepat untuk transaksi barter mikro di Indonesia.
