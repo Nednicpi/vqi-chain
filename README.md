@@ -22,4 +22,4 @@ Boleh kloning, belajar, dan kontribusi via Pull Request.
 Untuk komersial hubungi owner.
 
 ### 🚀 Visi
-Menjadi chain voucher tercepat untuk transaksi barter mikro di Indones
+Menjadi chain voucher tercepat untuk transaksi barter mikro di Indonesia
